@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Admin Home</title>
+		<meta name="description" content="">
+		<meta name="author" content="vijay">
+		<meta name="viewport" content="width=device-width; initial-scale=1.0">
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+		<link
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+		rel="stylesheet" id="bootstrap-css">
+		<link href="../css/style.css" rel="stylesheet" id="bootstrap-css">
+		<link href="../css/home.css" rel="stylesheet" id="bootstrap-css">
+		<style type="text/css">
+			.navbar {
+				background-color: #419eb9;
+			}
+			.alert {
+				display: none;
+			}
+			
+		</style>
+		<script src="https:////code.jquery.com/jquery-1.10.2.min.js"></script>
+		<script src="https:////maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		<script src="../js/script.js"></script>
+	</head>
+	<body style="">
+		<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="home.html">E commence</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    	<ul class="nav navbar-nav">
+						<li class="active">
+							<a href="#" onclick="redirectUri('adminhome')">Home</a>
+						</li>
+						<li>
+							<a href="#" onclick="redirectUri('addvendor')">Add Vendor</a>
+						</li>
+						<li>
+							<a href="#" onclick="redirectUri('addprod')">Add Product</a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a style="color: #ddd">Welcome <span id="username"></span> </a>
+						</li>
+					</ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+		<div class="container">
+			<div class="row">
+		        <div class="col-md-12">
+		            <div id="custom-search-input">
+		                <div class="input-group col-md-12">
+		                    <input type="text" class="form-control input-lg" placeholder="Vendor Name" id="searchbar"/>
+		                    <span class="input-group-btn">
+		                        <button class="btn btn-info btn-lg" type="button">
+		                            <i class="glyphicon glyphicon-search"></i>
+		                        </button>
+		                    </span>
+		                </div>
+		            </div>
+		        </div>
+			</div>
+			
+			<div id="products" class="row list-group">
+			</div>
+		</div>
+<script>
+var key = getUrlParameter("key");
+if (key != null) {
+	var decodedData = atob(key);
+	console.log(decodedData.split("###")[1])
+	$("#username").text(decodedData.split("###")[1]);
+} else {
+	window.location.href = "login.html";
+}
+
+db.transaction(function(tx) {
+	tx.executeSql('SELECT * FROM VENDOR', [], function(tx, results) {
+		var len = results.rows.length,
+		    i;
+		console.log(results.rows)
+		for ( i = 0; i < len; i++) {
+			var html = "<div class=\"item grid-group-item list-group-item\" id=\"vendor"+results.rows[i].id+"\">" + "<div class=\"clear col-xs-4 col-sm-3 col-md-2\" ><img width=\"100%\" src=\"" + results.rows[i].image + "\" alt=\"\" /></div>"
+			 + "<div class=\"col-xs-6 col-md-4 padding10\"><h2 class=\"group inner list-group-item-heading\">" + results.rows[i].name + "</h2>" + "<p class=\"group inner list-group-item-text\">" + results.rows[i].address + "</p></div>"
+			 +"<div class=\"col-xs-5 col-md-4 padding10\"><a class=\"btn btn-info\" href=\"#\" onclick=\"redirectProductList('"+results.rows[i].id+"')\">Product List</a></div></div>";
+			$("#products").append(html);
+		}
+	}, null);
+});
+			
+				function redirectProductList(id){
+				var key = getUrlParameter("key");
+				window.location.href = "productlist.html?key="+key+"&id="+id;
+			} 
+			
+			$('#searchbar').on('keyup', function(e){
+			    var query = $.trim($('#searchbar').val()).toLowerCase();
+			     $('div.vendor h2').each(function(){
+			          var $this = $(this);
+			          if($this.text().toLowerCase().indexOf(query) === -1)
+			              $this.closest('div.vendor').fadeOut();
+			         else $this.closest('div.vendor').fadeIn();
+			     });
+			});
+</script>
+	</body>
+</html>

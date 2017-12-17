@@ -1,0 +1,50 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.9.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+plugins {
+  id "at.comm_unity.gradle.plugins.jpamodelgen" version "1.1.1"
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'at.comm_unity.gradle.plugins.jpamodelgen'
+
+group = 'com.vijay.dev'
+version = '0.0.1'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+configurations{
+	provided
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile group: 'mysql',name:'mysql-connector-java', version:'5.1.31'
+	compile group: 'org.springframework', name: 'spring-orm', version: '5.0.0.RELEASE'
+	compile group: 'org.hibernate', name: 'hibernate-core', version: '5.2.11.Final'
+	compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.2.11.Final'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.2'
+	compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.17'
+	compile group: 'org.json', name: 'json', version: '20171018'
+	provided group: 'org.hibernate', name: 'hibernate-jpamodelgen', version: '5.2.11.Final'
+	
+}
+
+jpaModelgen {
+  library = "org.hibernate:hibernate-jpamodelgen:5.0.7.Final"
+  jpaModelgenSourcesDir = "src/generated/java"
+}
+
+compileJava.options.compilerArgs += ["-proc:none"]

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Cart</title>
+		<meta name="description" content="">
+		<meta name="author" content="vijay">
+		<meta name="viewport" content="width=device-width; initial-scale=1.0">
+		<link rel="shortcut icon" href="favicon.ico">
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+		<link
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+		rel="stylesheet" id="bootstrap-css">
+		<link href="css/style.css" rel="stylesheet" id="bootstrap-css">
+		<link href="css/home.css" rel="stylesheet" id="bootstrap-css">
+		<style type="text/css">
+			.navbar {
+				background-color: #419eb9;
+			}
+		</style>
+		<script src="https:////code.jquery.com/jquery-1.10.2.min.js"></script>
+		<script src="https:////maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		<script	src="js/script.js"></script>
+
+	</head>
+	<body style="">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Ecommerce</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="#" onclick="redirectUri('home')">Vendor List</a>
+						</li class="active">
+						<li class="active">
+							<a href="#" onclick="redirectUri('cart')">My Cart</a>
+						</li>
+						<li>
+							<a href="#" onclick="redirectUri('profile')">My Profile</a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a style="color: #ddd">Welcome <span id="username"></span> </a>
+						</li>
+					</ul>
+				</div><!-- /.navbar-collapse -->
+			</div><!-- /.container-fluid -->
+		</nav>
+		<div class="container">
+			<div><h2 id="carthead">My Cart Items </h2></div>
+			<div class="row">
+		        <div class="col-md-12">
+		            <div id="custom-search-input">
+		                <div class="input-group col-md-12">
+		                    <input type="text" class="form-control input-lg" placeholder="Product Name" id="searchbar"/>
+		                    <span class="input-group-btn">
+		                        <button class="btn btn-info btn-lg" type="button">
+		                            <i class="glyphicon glyphicon-search"></i>
+		                        </button>
+		                    </span>
+		                </div>
+		            </div>
+		        </div>
+			</div>
+			<div id="products" class="row list-group">
+
+			</div>
+		</div>
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Remove form Cart</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="alert alert-success">
+								<strong>Success!</strong> Product removed from cart successfully.
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">
+								Close
+							</button>
+							<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		<script>
+			var key = getUrlParameter("key");
+			var vendor = getUrlParameter("id");
+			if (key != null) {
+				var decodedData = atob(key);
+				$("#username").text(decodedData.split("###")[1]);
+			} else {
+				window.location.href = "login.html";
+			}
+			
+
+			db.transaction(function(tx) {
+				tx.executeSql('SELECT * FROM CART where userid=?', [decodedData.split("###")[0]], function(tx, results) {					
+					var len = results.rows.length,i;
+					if(len==0){
+						$("#carthead").text("No Items In Cart");
+						$("#custom-search-input").hide();
+					}
+					for ( i = 0; i < len; i++) {
+						var html = "<div class=\"item grid-group-item list-group-item cart\" id=\"cart"+results.rows[i].id+"\">" + "<div class=\"clear col-xs-4 col-sm-4\" ><img width=\"100%\" src=\"" + results.rows[i].image + "\" alt=\"\" /></div>"
+						 + "<div class=\"col-xs-4 col-md-4 padding10\"><h3 class=\"group inner list-group-item-heading\">" + results.rows[i].name + "</h3>" + "<p class=\"group inner list-group-item-text\"> Price : " + results.rows[i].price + "</p></div>"
+						 +"<div class=\"col-xs-3 col-md-4 padding10\"><p>Quantity : "+results.rows[i].quantity+"</p><a class=\"btn btn-info\" href=\"#\" onclick=\"removeFromCart('"+results.rows[i].id+"','"+results.rows[i].productid+"')\">Remove From Cart</a></div></div>";
+						$("#products").append(html);
+					}
+				}, null);
+			});
+			
+			$('#myModal').on('hidden.bs.modal', function () {
+				var key = getUrlParameter("key");
+				window.location.href = "cart.html?key="+key;
+			});
+			function removeFromCart(id,productid){
+				db.transaction(function(tx) {
+					tx.executeSql('DELETE FROM CART where id=?', [id], function(tx, results) {
+						tx.executeSql('SELECT * FROM PRODUCTS where id=?', [productid], function(tx, results) {
+							var len = results.rows.length,
+							    i;
+							for ( i = 0; i < len; i++) {
+								var updatedQuantity = parseInt(results.rows[i].quantity)+1;
+								tx.executeSql('UPDATE PRODUCTS SET QUANTITY=? where id=?', [updatedQuantity,productid], function(tx, results) {
+									$('#myModal').modal('show');
+								 },null);
+								}
+							}, null);
+					}, null);
+				});
+			}
+			
+			$('#searchbar').on('keyup', function(e){
+			    var query = $.trim($('#searchbar').val()).toLowerCase();
+			     $('div.cart h3').each(function(){
+			          var $this = $(this);
+			          if($this.text().toLowerCase().indexOf(query) === -1)
+			              $this.closest('div.cart').fadeOut();
+			         else $this.closest('div.cart').fadeIn();
+			     });
+			}); 
+		</script>
+	</body>
+</html>

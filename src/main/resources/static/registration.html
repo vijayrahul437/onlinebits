@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Registration</title>
+		<meta name="description" content="">
+		<meta name="author" content="vijay">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="shortcut icon" href="favicon.ico">
+		<link
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+		rel="stylesheet" id="bootstrap-css">
+		<link href="css/style.css" rel="stylesheet" id="bootstrap-css">
+		<style type="text/css">
+			.navbar {
+				background-color: #419eb9;
+			}
+		</style>
+		<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+		<script	src="https:////maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		<script	src="js/script.js"></script>
+	</head>
+	<body style="">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Ecommerce</a>
+				</div>
+			</div><!-- /.container-fluid -->
+		</nav>
+		<div class="container">
+			<div class="row centered-form">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h3 class="panel-title">Sign Up </h3>
+						</div>
+						<div class="modal-body">
+							<form id="registrationform">
+								<div class="form-group">
+									<input required="required" type="text" name="name" id="name" class="form-control input-md" placeholder="Name">
+								</div>
+								<div class="form-group">
+									<input required="required" type="email" name="email" id="email" class="form-control input-md" placeholder="Email Address">
+								</div>
+
+								<div class="form-group">
+									<input required="required" type="password" name="password" id="password" class="form-control input-md" placeholder="Password">
+								</div>
+								<div class="form-group">
+									<input required="required" type="text" name="address" id="address" class="form-control input-md" placeholder="Address">
+								</div>
+								<div class="form-group">
+									<input required="required" type="text" name="phonenumber" id="phonenumber" class="form-control input-md" placeholder="Phone Number">
+								</div>
+
+								<div class="form-group">
+									<input type="submit" id="registrationbutton" value="Register" class="btn btn-info btn-block">
+									<span class=" reglink pull-right">Existing User? <a href="login.html">LogIn here</a></span>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Registration</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-success">
+							<strong>Success!</strong> Registration done successfully.
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">
+							Close
+						</button>
+						<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			$("form").submit(function(event) {
+				var name = $("#name").val();
+				var email = $("#email").val();
+				var password = $("#password").val();
+				var address = $("#address").val();
+				var phonenumber = $("#phonenumber").val();
+				db.transaction(function(tx) {
+					tx.executeSql('INSERT INTO USER (name,emailaddr,pswrd,address,phonenumber) VALUES (?,?,?,?,?)', [name, email, password, address, phonenumber], function(tx, results) {
+						$('#myModal').modal('show');
+						//window.location.href = "login.html";
+					});
+				});
+				event.preventDefault();
+			});
+			$("#myModal").on("hidden.bs.modal", function() {
+				window.location.href = "login.html";
+			});
+		</script>
+
+	</body>
+</html>
